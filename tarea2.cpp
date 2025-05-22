@@ -13,7 +13,8 @@ struct Habitacion {
     string tipo;
 };
 
-void leerHabitaciones(ifstream& archivo, Habitacion habitaciones[], int& numHabitaciones) {
+void leerHabitaciones(ifstream& archivo, Habitacion*& habitaciones, int& numHabitaciones) {
+
     string linea; //Lee la linea "Habitaciones"
     getline(archivo, linea);
     if (linea != "HABITACIONES"){
@@ -21,13 +22,14 @@ void leerHabitaciones(ifstream& archivo, Habitacion habitaciones[], int& numHabi
         return;
     }
 
+    habitaciones = new Habitacion[numHabitaciones];
     getline(archivo, linea);     //Leer el numero de habitaciones
     numHabitaciones = stoi(linea); // Convierte la linea a int
 
     //Leer cada habitacion
     for (int i = 0; i < numHabitaciones; i++) { // Leer la linea del id, name, desc y tipo.
         getline(archivo, linea);
-
+        
         stringstream ss(linea); //stringstream para convertir linea 
         unsigned int id;
         string name, tipo;
@@ -75,8 +77,8 @@ int main() {
         return 1;
     }
 
-    Habitacion habitaciones[100];
-    int numHabitaciones = 0; // Inicializar en 0
+    Habitacion* habitaciones = nullptr;
+    int numHabitaciones = 20; // Inicializar en 20, segun el archivo.map lo indique.
     leerHabitaciones(archivo, habitaciones, numHabitaciones);
 
     // Imprimir habitaciones
@@ -87,5 +89,6 @@ int main() {
     }
 
     archivo.close();
+    delete[] habitaciones;
     return 0;
 }
