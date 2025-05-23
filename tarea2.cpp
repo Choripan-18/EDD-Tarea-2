@@ -9,8 +9,84 @@ struct Habitacion { //Estructura para almacenar los datos de cada habitacion
     int id;
     string nombre;
     string tipo;
-    string descripcion;
 };
+
+struct Arco {
+    unsigned int origen, destino;
+};
+
+/**
+*void leerHabitaciones
+*Input:
+* ifstream& archivo: Archivo abierto en posicion de linea 2 HABITACIONES
+* Habitacion*& habitaciones: arreglo vacio de habitaciones
+* int& numHabitaciones: cantidad de habitaciones, numero entero
+*returns:
+*Es void pero extrae del archivo .map toda la informacion de las habitaciones del juego
+**/
+void leerHabitaciones(ifstream& archivo, Habitacion*& habitaciones, int numHabitaciones) {
+
+    string linea; //Lee la linea "Habitaciones"
+
+    habitaciones = new Habitacion[numHabitaciones];
+
+    //Leer cada habitacion
+    for (int i = 0; i < numHabitaciones; i++) { // Leer la linea del id, name, desc y tipo.
+        getline(archivo, linea);
+        
+        stringstream ss(linea); //stringstream para convertir linea 
+        unsigned int id;
+        string name, tipo, desc;
+
+        ss >> id; //extrae id;
+        getline(ss, name, '('); //Leemos hasta el '(', extraemos name
+        name = name.substr(0, name.size()-1); // quitar espacio al final en name
+        getline(ss, tipo, ')'); // Leer hasta ')', extraer tipo
+        
+        //Almacenamos la lista
+        habitaciones[i].id = id;
+        habitaciones[i].name = name;
+        habitaciones[i].tipo = tipo;
+        
+        //extraer desc
+        desc = "";
+        getline(archivo, desc);
+        habitaciones[i].desc = desc;
+    }
+}
+
+/**
+*void leerArcos
+*lee arcos y los almacena en un arreglo dinamico de arcos
+*
+*
+*
+*
+*
+*
+*
+*
+**/
+void leerArcos(ifstream& archivo, Arco*& arcos, int numArcos){
+    arcos = new Arco[numArcos];
+    string linea;
+    for (int i=0; i < numArcos; i++){
+        getline(archivo, linea);
+        stringstream ss(linea);
+        string flecha;
+        ss >> arcos[i].origen >> flecha >> arcos[i].destino;
+    }
+    
+
+
+
+
+}
+
+
+
+
+
 
 
 
@@ -25,50 +101,59 @@ int main() {
         return 1;
     }
 
-    cout << "Archivo abierto correctamente." << endl;
+    string* linea = new string;
 
-    //Buscar habitaciones
-    string linea;
-    while (getline(archivo, linea)) {
-        if (linea.find("HABITACIONES") != string::npos) break;
+    while (*linea != "HABITACIONES"){ //ciclo hasta llegar a HABITACIONES
+        getline(archivo, *linea); // obtener linea
+        if (*linea != "INICIO DE ARCHIVO" && *linea != "HABITACIONES"){ //verificar que cumpla con el formato
+            cerr << "El archivo no posee el formato esperado" << endl; //si no cumple mensaje de error
+            archivo.close();
+            return 1;
+        }
     }
+    
+    Habitacion* habitaciones = nullptr;
+    int* numHabitaciones = new int;
+    ; // Inicializar para guardar cantidad de habitaciones
 
-    int CantidadDeHabitaciones = 0;
-    archivo >> CantidadDeHabitaciones;
-    archivo.ignore();                   // Ignorar el salto de línea después del número de habitaciones
+    getline(archivo, *linea);
+    *numHabitaciones = stoi(*linea);
+    leerHabitaciones(archivo, habitaciones, *numHabitaciones);
 
-    Habitacion* habitaciones = new Habitacion[CantidadDeHabitaciones]; //Crea un arreglo de habitaciones
-
-    for(int i = 0; i < CantidadDeHabitaciones; i++) {       //Ciclo que se repite la cantidad de habitaciones que tenga el archivo
-        
-        int id;                                             //Declaracion de vcariables para guardar los datos de la habitacion
-        string nombre, tipo, descripcion;
-        getline(archivo, linea);                          //Lee la linea de la habitacion
-        stringstream ss(linea);                             //Crear un stringstream para leer la linea
-        ss >> id;
-        getline(ss, nombre, '(');                           //Lee hasta antes del tipo y lo guarda en nombre
-        nombre = nombre.substr(0, nombre.size() - 1);       //Elimina el espacio al final
-        getline(ss, tipo, ')');                             //Lee hasta el ) y lo guarda en tipo
-        getline(archivo, descripcion);                      //Lee la siguiente linea y lo guarda en descripcion
-
-        //Guardar los datos de la habitacion en el arreglo
-        habitaciones[i].id = id;
-        habitaciones[i].nombre = nombre;
-        habitaciones[i].tipo = tipo;
-        habitaciones[i].descripcion = descripcion;
-
-    } //Habitaciones guardadas.
-
-    // * PRUEBA * mostrar habitaciones para ver que se guardaron
-
-    cout << "\nHabitaciones encontradas:\n";
-    for (int i = 0; i < CantidadDeHabitaciones; i++) {
-        cout << habitaciones[i].id << " - " << habitaciones[i].nombre << " (" << habitaciones[i].tipo << ")\n";
-        cout << "  " << habitaciones[i].descripcion << endl;
+    // Imprimir habitaciones
+    for (int i = 0; i < *numHabitaciones; i++) {
+        cout << "Habitacion " << habitaciones[i].id << ": " << habitaciones[i].name
+             << " (" << habitaciones[i].tipo << ")" << endl
+             << "Descripcion: " << habitaciones[i].desc << endl;
     }
+    // Aca termina justo antes de linea ARCOS
+
+    getline(archivo, *linea);
+    if (*linea != "ARCOS"){
+        cerr<< "Error al leer seccion ARCOS"<< endl;
+        return 1;
+    }
+    getline(archivo, *linea);
+    int* numArcos = new int;
+    Arco* arcos = nullptr;
+
+    *numArcos = stoi(*linea);
+    leerArcos(archivo, arcos, *numArcos);
+
+    for (int i= 0; i < *numArcos; i++){
+        cout << arcos[i].origen << "->" << arcos[i].destino<<endl;
+
+    }
+    
+
 
 
     archivo.close();
+    delete linea;
+    delete[] habitaciones;
+    delete numHabitaciones;
+    delete[] arcos;
+    delete numArcos;
     return 0;
 
 }
