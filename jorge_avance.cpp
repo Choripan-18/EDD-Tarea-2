@@ -5,6 +5,8 @@
 #include <random>
 using namespace std;
 
+
+
 struct Habitacion {
     // Estructura de habitacion
     unsigned int id;
@@ -38,6 +40,47 @@ struct Enemigo {
     float precision, probabilidad;
 };
 
+struct NodoCola{
+    Enemigo enemigo;
+    NodoCola* sig;
+    NodoCola(Enemigo e) : enemigo(e), sig(nullptr){}
+    ~NodoCola() {delete sig;}
+};
+
+class Cola {
+
+    private: 
+        NodoCola* frente;
+        NodoCola* final;
+    public:
+        Cola() : frente(nullptr), final(nullptr){}
+        ~Cola() {delete frente; }
+    
+        void enqueue(Enemigo e) {
+            NodoCola* nuevo = new NodoCola(e);
+            if (!frente) {
+                frente = final = nuevo;
+            }
+            else {
+                final->sig = nuevo;
+                final = nuevo;
+            }
+
+        }
+    bool estaVacia(){ return frente == nullptr;}
+
+    Enemigo dequeue(){
+        if (estaVacia()) throw runtime_error("Cola vacia");
+        NodoCola* temp = frente;
+        Enemigo e = temp -> enemigo;
+        frente = frente->sig;
+        if(!frente) final = nullptr;
+        temp->sig = nullptr;
+        delete temp;
+        return e;
+    }
+};
+
 
 /**
 *void leerHabitaciones
@@ -48,7 +91,7 @@ struct Enemigo {
 *returns:
 *Es void pero extrae del archivo .map toda la informacion de las habitaciones del juego
 **/
-void leerHabitaciones(ifstream& archivo, Habitacion*& habitaciones, int numHabitaciones) {
+void leerHabitaciones(ifstream& archivo, Habitacion*& habitaciones, int& numHabitaciones) {
 
     string linea; //Lee la linea "Habitaciones"
 
@@ -86,7 +129,7 @@ void leerHabitaciones(ifstream& archivo, Habitacion*& habitaciones, int numHabit
 * Return:
 * ES VOID PERO Extrae del .map los Arcos que relacionan las habitaciones del juego.
 **/
-void leerArcos(ifstream& archivo, Arco*& arcos, int numArcos){
+void leerArcos(ifstream& archivo, Arco*& arcos, int& numArcos){
     arcos = new Arco[numArcos];
     string linea;
     for (int i=0; i < numArcos; i++){
@@ -98,7 +141,7 @@ void leerArcos(ifstream& archivo, Arco*& arcos, int numArcos){
 
 }
 
-void crearArbol(Habitacion* habitaciones, Arco* arcos, NodoArbol*& raiz, int numHabitaciones, int numArcos){
+void crearArbol(Habitacion* habitaciones, Arco* arcos, NodoArbol*& raiz, int& numHabitaciones, int& numArcos){
     NodoArbol** nodos = new NodoArbol*[numHabitaciones];
     for (int i = 0; i < numHabitaciones; i++){
         nodos[i] = new NodoArbol;
@@ -236,6 +279,27 @@ int main() {
              << " | Precision: " << enemigos[i].precision
              << " | Probabilidad: " << enemigos[i].probabilidad << endl;
     }
+    //Aqui nos quedamos justo en linea EVENTOS
+
+    /* SOLO PARA PROBAR COLA
+    // Probar la cola
+    Cola colaEnemigos;
+    cout << "\nEncolando enemigos..." << endl;
+    for (int i = 0; i < *numEnemigos; i++) {
+        cout << "Encolando: " << enemigos[i].nombre << endl;
+        colaEnemigos.enqueue(enemigos[i]);
+    }
+
+    cout << "\nDesencolando enemigos..." << endl;
+    while (!colaEnemigos.estaVacia()) {
+        Enemigo e = colaEnemigos.dequeue();
+        cout << "Desencolado: " << e.nombre
+             << " | Vida: " << e.vida
+             << " | Ataque: " << e.ataque
+             << " | Precision: " << e.precision
+             << " | Probabilidad: " << e.probabilidad << endl;
+    }
+*/
 
 
 
