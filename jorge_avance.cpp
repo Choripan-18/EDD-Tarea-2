@@ -40,11 +40,31 @@ struct Enemigo {
     float precision, probabilidad;
 };
 
+struct Opcion {
+    string accion;
+    string desc;
+    string consecuencia;
+};
+
+
+struct Evento {
+    string nombre;
+    string desc;
+    float probabilidad;
+    Opcion opciones[2];
+};
+
+
 struct NodoCola{
     Enemigo enemigo;
     NodoCola* sig;
     NodoCola(Enemigo e) : enemigo(e), sig(nullptr){}
     ~NodoCola() {delete sig;}
+};
+
+struct Mejora {
+    string tipo;
+    float valor;
 };
 
 class Cola {
@@ -141,6 +161,16 @@ void leerArcos(ifstream& archivo, Arco*& arcos, int& numArcos){
 
 }
 
+/*
+* void crearArbol
+* Construye el arbol ternario con las habitaciones y arcos.
+* Input:
+* Habitacion* habitaciones: arreglo de habitaciones
+* Arco* arcos: arreglo de arcos.
+* NodoArbol*& raiz: puntero a la raiz del arbol
+*Returns:
+* es void pero construye el arbol ternario.
+*/
 void crearArbol(Habitacion* habitaciones, Arco* arcos, NodoArbol*& raiz, int& numHabitaciones, int& numArcos){
     NodoArbol** nodos = new NodoArbol*[numHabitaciones];
     for (int i = 0; i < numHabitaciones; i++){
@@ -174,6 +204,17 @@ void imprimirArbol(NodoArbol* nodo, int nivel = 0) {
 }
     */
 
+/* void leerEnemigos
+ * Lee la seccion de enemigos y los almacena en un arreglo de Enemigos
+ * Input: 
+ * el archivo .map
+ * Un arreglo dinamico de enemigos pasado por referencia
+ * La cantidad de enemigos pasado por referencia.
+ * Archivo.map
+ * Return:
+ * Es void pero modifica el arreglo de Enemigo con todos los enemigos.
+*/
+
 void leerEnemigos(ifstream& archivo, Enemigo*& enemigos, int& numEnemigos) {
     string linea; 
     enemigos = new Enemigo[numEnemigos];
@@ -192,12 +233,64 @@ void leerEnemigos(ifstream& archivo, Enemigo*& enemigos, int& numEnemigos) {
         ss >> enemigo.precision; //Guardar precision
         ss.ignore(16); //Ignorar " | Probabilidad "
         ss >> enemigo.probabilidad; //Guardar probabilidad
-
         enemigos[i] = enemigo; //Guardar enemigo en el arreglo enemigos
 
     }
 }
 
+/*
+* void leerEventos
+* Extrae los datos de el apartado EVENTOS y los almacena en un arreglo de Evento.
+* Input:
+*  El archivo.map, el arreglo dinamico de Evento, la cantidad de eventos
+* Return:
+* Void, pero modifica el arreglo dinamico de Evento con los eventos que hayan.
+*/
+void leerEventos(ifstream& archivo, Evento*& eventos, int numEventos) {
+    eventos = new Evento[numEventos];
+    string linea;
+    for (int i = 0; i < numEventos; i++){
+        getline(archivo, linea); //&
+        if (linea != "&") cerr << "Error al leer eventos" << endl;
+        getline(archivo, eventos[i].nombre);
+        getline(archivo, linea);
+        eventos[i].probabilidad = stof(linea.substr(linea.find(" ") +1 ));
+        getline(archivo, eventos[i].desc);
+        for (int j = 0; j<2; j++){
+            getline(archivo, linea);
+            eventos[i].opciones[j].accion = linea;
+            getline(archivo, eventos[i].opciones[j].desc);
+            getline(archivo, eventos[i].opciones[j].consecuencia);
+        }
+    }
+}
+/*
+* void leerMejoras
+* Extrae de el archivo .map las mejoras.
+* Input: el archivo.map, Arreglo de Mejora, cantidad de mejoras por referencia)
+* Return: void, modifica el arreglo de Mejora incluyendo las indicadas en el archivo.map.
+*/
+
+void leerMejoras(ifstream& archivo, Mejora*& mejoras, int& numMejoras) {
+    string linea;
+    Mejora* temp = new Mejora[10];
+    numMejoras = 0;
+    while (getline(archivo, linea) && linea != "FIN DE ARCHIVO"){
+        stringstream ss(linea);
+        float valor;
+        string tipo;
+        ss >> valor >> tipo;
+        temp[numMejoras].valor = valor;
+        temp[numMejoras].tipo = tipo;
+        numMejoras++;
+    }
+    mejoras = new Mejora[numMejoras];
+    for (int i = 0; i < numMejoras; i++){
+        mejoras[i] = temp[i];
+    }
+    delete[] temp;
+}
+ 
 
 
 
@@ -261,6 +354,9 @@ int main() {
     getline(archivo, *linea);
     if (*linea != "ENEMIGOS"){
         cerr<< "Error al leer seccion ENEMIGOS"<< endl;
+        delete[] habitaciones;
+        delete[] arcos;
+        archivo.close();
         return 1;
     }
     getline(archivo, *linea);
@@ -280,30 +376,49 @@ int main() {
              << " | Probabilidad: " << enemigos[i].probabilidad << endl;
     }
     //Aqui nos quedamos justo en linea EVENTOS
-
-    /* SOLO PARA PROBAR COLA
-    // Probar la cola
-    Cola colaEnemigos;
-    cout << "\nEncolando enemigos..." << endl;
-    for (int i = 0; i < *numEnemigos; i++) {
-        cout << "Encolando: " << enemigos[i].nombre << endl;
-        colaEnemigos.enqueue(enemigos[i]);
+    getline(archivo, *linea); // Leer "EVENTOS"
+    if(*linea != "EVENTOS"){
+        cerr << "Error al leer seccion EVENTOS" << endl;
+        delete[] habitaciones;
+        delete[] enemigos;
+        delete[] arcos;
+        archivo.close();
+        return 1;
     }
 
-    cout << "\nDesencolando enemigos..." << endl;
-    while (!colaEnemigos.estaVacia()) {
-        Enemigo e = colaEnemigos.dequeue();
-        cout << "Desencolado: " << e.nombre
-             << " | Vida: " << e.vida
-             << " | Ataque: " << e.ataque
-             << " | Precision: " << e.precision
-             << " | Probabilidad: " << e.probabilidad << endl;
+    getline(archivo, *linea);
+    int numEventos;
+    numEventos = stoi(*linea);
+    Evento* eventos = nullptr;
+    leerEventos(archivo, eventos, numEventos);
+    for (int i = 0; i < numEventos; i++) {
+    cout << "Evento " << eventos[i].nombre << ": Probabilidad " << eventos[i].probabilidad << endl;
+    for (int j = 0; j < 2; j++) {
+        cout << "  " << eventos[i].opciones[j].accion << " - " << eventos[i].opciones[j].desc
+             << " (" << eventos[i].opciones[j].consecuencia << ")" << endl;
     }
-*/
+}
+    getline(archivo, *linea);
+    if (*linea != "MEJORAS DE COMBATE") {
+        cerr << "Error al leer mejoras de combate" << endl;
+        delete[] habitaciones;
+        delete[] enemigos;
+        delete[] eventos;
+        archivo.close();
+        return 1;
+    }
 
-
+    Mejora* mejoras = nullptr;
+    int numMejoras = 0;
+    leerMejoras(archivo, mejoras, numMejoras);
+    for (int i =0; i < numMejoras; i++) {
+        cout << "Mejora: +" << mejoras[i].valor << " " << mejoras[i].tipo << endl;
+    }
+    
 
     archivo.close();
+    delete[] eventos;
+    delete[] mejoras;
     delete linea;
     delete numEnemigos;
     delete[] habitaciones;
