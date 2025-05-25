@@ -47,6 +47,21 @@ struct NodoCola{
     ~NodoCola() {delete sig;}
 };
 
+
+struct OpcionEvento {
+    string opcion;
+    string descripcion;
+    string consecuencia;
+};
+
+struct Evento {
+    string nombre;
+    float probabilidad;
+    string descripcion;
+    OpcionEvento opciones[2]; 
+};
+
+
 class Cola {
 
     private: 
@@ -199,6 +214,33 @@ void leerEnemigos(ifstream& archivo, Enemigo*& enemigos, int& numEnemigos) {
 }
 
 
+void leerEventos(ifstream& archivo, Evento*& eventos, int& numEventos) {
+    string linea;
+    while(linea != "EVENTOS") { // Ciclo hasta llegar a la seccion de eventos
+        getline(archivo, linea);
+    }
+    getline(archivo, linea); // Leer la cantidad de eventos
+    numEventos = stoi(linea);
+    eventos = new Evento[numEventos];
+
+    for (int i = 0; i < numEventos; i++) {
+        getline(archivo, linea); // &
+        getline(archivo, eventos[i].nombre); // Nombre del evento
+        getline(archivo, linea); // Probabilidad
+        eventos[i].probabilidad = stof(linea.substr(13)); // Saltar "Probabilidad "
+        getline(archivo, eventos[i].descripcion); // Descripcion
+
+        for (int j = 0; j < 2; j++) { // Leer dos opciones
+            getline(archivo, eventos[i].opciones[j].opcion);
+            getline(archivo, eventos[i].opciones[j].descripcion);
+            getline(archivo, eventos[i].opciones[j].consecuencia);
+        }
+
+    }
+}
+
+
+
 
 
 
@@ -258,14 +300,12 @@ int main() {
     NodoArbol* raiz = nullptr;
     crearArbol(habitaciones, arcos, raiz, *numHabitaciones, *numArcos);
 
-    getline(archivo, *linea);
-    if (*linea != "ENEMIGOS"){
-        cerr<< "Error al leer seccion ENEMIGOS"<< endl;
-        return 1;
+    
+    while (*linea != "ENEMIGOS") { // Ciclo hasta llegar a la seccion de enemigos
+        getline(archivo, *linea);
     }
     getline(archivo, *linea);
     int* numEnemigos = new int;
-
     *numEnemigos = stoi(*linea);
     Enemigo* enemigos = nullptr;
 
@@ -279,7 +319,29 @@ int main() {
              << " | Precision: " << enemigos[i].precision
              << " | Probabilidad: " << enemigos[i].probabilidad << endl;
     }
+
+
     //Aqui nos quedamos justo en linea EVENTOS
+
+    Evento* eventos = nullptr;
+    int numEventos = 0;
+    leerEventos(archivo, eventos, numEventos);
+
+    //Probar eventos
+    for (int i = 0; i < numEventos; i++) {
+    cout << "Evento: " << eventos[i].nombre << " | Probabilidad: " << eventos[i].probabilidad << endl;
+    for (int j = 0; j < 2; j++) {
+        cout << "  Opcion " << eventos[i].opciones[j].opcion << ": " << eventos[i].opciones[j].descripcion << endl;
+        cout << "    Consecuencia: " << eventos[i].opciones[j].consecuencia << endl;
+    }
+}
+
+
+
+
+
+
+
 
     /* SOLO PARA PROBAR COLA
     // Probar la cola
@@ -311,5 +373,6 @@ int main() {
     delete[] arcos;
     delete numArcos;
     delete raiz;
+    delete[] eventos;
     return 0;
 }
