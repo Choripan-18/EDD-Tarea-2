@@ -6,7 +6,6 @@
 using namespace std;
 
 
-
 struct Habitacion {
     // Estructura de habitacion
     unsigned int id;
@@ -15,9 +14,11 @@ struct Habitacion {
     string tipo;
 };
 
+
 struct Arco {
     unsigned int origen, destino;
 };
+
 
 struct NodoArbol{
     unsigned int id;
@@ -34,11 +35,14 @@ struct NodoArbol{
         delete hijo3;
     }
 };
+
+
 struct Enemigo {
     string nombre;
     int vida, ataque;
     float precision, probabilidad;
 };
+
 
 struct NodoCola{
     Enemigo enemigo;
@@ -54,11 +58,18 @@ struct OpcionEvento {
     string consecuencia;
 };
 
+
 struct Evento {
     string nombre;
     float probabilidad;
     string descripcion;
     OpcionEvento opciones[2]; 
+};
+
+
+struct Mejora {
+    string tipo;
+    float valor;
 };
 
 
@@ -95,6 +106,33 @@ class Cola {
         return e;
     }
 };
+
+
+class Jugador{
+    private:
+        int vida;
+        int ataque;
+        float precision;
+        int recuperacion;
+    public:
+        // Getters
+        int getVida() const { return vida; }
+        int getAtaque() const { return ataque; }
+        float getPrecision() const { return precision; }
+        int getRecuperacion() const { return recuperacion; }
+
+        // Setters
+        void setVida(int v) { vida = v; }
+        void setAtaque(int a) { ataque = a; }
+        void setPrecision(float p) { precision = p; }
+        void setRecuperacion(int r) { recuperacion = r; }
+
+        void regenerarVida() {
+            vida += recuperacion;
+            cout << "\nHas recuperado vida. Vida actual: " << vida << endl;
+        }
+};
+
 
 
 /**
@@ -137,6 +175,7 @@ void leerHabitaciones(ifstream& archivo, Habitacion*& habitaciones, int& numHabi
     }
 }
 
+
 /**
 *void leerArcos
 *lee arcos y los almacena en un arreglo dinamico de arcos
@@ -155,6 +194,7 @@ void leerArcos(ifstream& archivo, Arco*& arcos, int& numArcos){
     }
 
 }
+
 
 void crearArbol(Habitacion* habitaciones, Arco* arcos, NodoArbol*& raiz, int& numHabitaciones, int& numArcos){
     NodoArbol** nodos = new NodoArbol*[numHabitaciones];
@@ -188,6 +228,7 @@ void imprimirArbol(NodoArbol* nodo, int nivel = 0) {
     imprimirArbol(nodo->hijo3, nivel + 1);
 }
     */
+
 
 void leerEnemigos(ifstream& archivo, Enemigo*& enemigos, int& numEnemigos) {
     string linea; 
@@ -240,14 +281,85 @@ void leerEventos(ifstream& archivo, Evento*& eventos, int& numEventos) {
 }
 
 
+void leerMejoras(ifstream& archivo, Mejora*& mejoras, int& numMejoras) {
+    string linea;
+    Mejora* temp = new Mejora[10];
+    numMejoras = 0;
+    while (getline(archivo, linea) && linea != "FIN DE ARCHIVO"){
+        stringstream ss(linea);
+        float valor;
+        string tipo;
+        ss >> valor >> tipo;
+        temp[numMejoras].valor = valor;
+        temp[numMejoras].tipo = tipo;
+        numMejoras++;
+    }
+    mejoras = new Mejora[numMejoras];
+    for (int i = 0; i < numMejoras; i++){
+        mejoras[i] = temp[i];
+    }
+    delete[] temp;
+}
 
 
+void elegirCamino(NodoArbol*& nodoActual){
+    cout << "Caminos disponibles:\n";
+    int opcion = 1;     //mostrar opciones
+    if (nodoActual->hijo1) {
+        cout << opcion << ". " << nodoActual->hijo1->name << endl;
+        opcion++;
+    }
+    if (nodoActual->hijo2) {
+        cout << opcion << ". " << nodoActual->hijo2->name << endl;
+        opcion++;
+    }
+    if (nodoActual->hijo3) {
+        cout << opcion << ". " << nodoActual->hijo3->name << endl;
+    }
+    cout << "\nTu eleccion: ";
+    cin >> opcion;      //ingresar eleccion
+
+    //validar camino y mover al jugador a la habitacion elegida
+    if (opcion == 1 && nodoActual->hijo1) {
+        nodoActual = nodoActual->hijo1;
+    }
+    else if (opcion == 2 && nodoActual->hijo2) {
+        nodoActual = nodoActual->hijo2;
+    }
+    else if (opcion == 3 && nodoActual->hijo3) {
+        nodoActual = nodoActual->hijo3;
+    }
+    else {
+        cout << "Opcion invalida. Intenta de nuevo." << endl;
+        elegirCamino(nodoActual);
+    }
+}
+
+
+Evento& elegirEvento(Evento* eventos, int numEventos){
+
+    random_device rd; 
+    mt19937 gen(rd()); // Generador de numeros aleatorios
+    uniform_real_distribution<float> dist(0.0, 1.0); // Distribucion uniforme entre 0 y 1
+    float prob = dist(gen); // Generar un flotante aleatorio entre 0 y 1
+    float acumulado = 0.0f;
+    for (int i = 0; i < numEventos; i++) {
+        acumulado += eventos[i].probabilidad;
+        if (prob <= acumulado) {
+            return eventos[i]; // Retorna el evento seleccionado
+        }
+    }
+    return eventos[0]; //Si ningun evento es seleccionado retorna por defecto el primero
+
+}
 
 
 int main() {
     cout << "Juego Aventura - EDD Tarea 2" << endl;
-    cout << "Creado por: Jorge Gahona y Matias Ibañez" << endl;
+    cout << "Creado por: Jorge Gahona y Matias Ibañez\n" << endl;
 
+
+    //CONSEGUIR DATOS **********
     ifstream archivo("ejemplo.map");
     if (!archivo.is_open()) {
         cerr << "Error al abrir el Archivo" << endl;
@@ -273,12 +385,12 @@ int main() {
     *numHabitaciones = stoi(*linea);
     leerHabitaciones(archivo, habitaciones, *numHabitaciones);
 
-    // Imprimir habitaciones
+    /* Imprimir habitaciones (prueba)
     for (int i = 0; i < *numHabitaciones; i++) {
         cout << "Habitacion " << habitaciones[i].id << ": " << habitaciones[i].name
              << " (" << habitaciones[i].tipo << ")" << endl
              << "Descripcion: " << habitaciones[i].desc << endl;
-    }
+    }*/
     // Aca termina justo antes de linea ARCOS
 
     getline(archivo, *linea);
@@ -293,14 +405,15 @@ int main() {
     *numArcos = stoi(*linea);
     leerArcos(archivo, arcos, *numArcos);
 
+    /* Imprimir arcos (prueba)
     for (int i= 0; i < *numArcos; i++){
         cout << arcos[i].origen << "->" << arcos[i].destino<<endl;
-    }
+    }*/
 
     NodoArbol* raiz = nullptr;
     crearArbol(habitaciones, arcos, raiz, *numHabitaciones, *numArcos);
 
-    
+
     while (*linea != "ENEMIGOS") { // Ciclo hasta llegar a la seccion de enemigos
         getline(archivo, *linea);
     }
@@ -311,14 +424,14 @@ int main() {
 
     leerEnemigos(archivo, enemigos, *numEnemigos);
 
-       // Imprimir enemigos
+    /* Imprimir enemigos (prueba)
     for (int i = 0; i < *numEnemigos; i++) {
         cout << "Enemigo " << i + 1 << ": " << enemigos[i].nombre
              << " | Vida: " << enemigos[i].vida
              << " | Ataque: " << enemigos[i].ataque
              << " | Precision: " << enemigos[i].precision
              << " | Probabilidad: " << enemigos[i].probabilidad << endl;
-    }
+    }*/
 
 
     //Aqui nos quedamos justo en linea EVENTOS
@@ -327,42 +440,74 @@ int main() {
     int numEventos = 0;
     leerEventos(archivo, eventos, numEventos);
 
-    //Probar eventos
+    /*Probar eventos
     for (int i = 0; i < numEventos; i++) {
     cout << "Evento: " << eventos[i].nombre << " | Probabilidad: " << eventos[i].probabilidad << endl;
     for (int j = 0; j < 2; j++) {
         cout << "  Opcion " << eventos[i].opciones[j].opcion << ": " << eventos[i].opciones[j].descripcion << endl;
         cout << "    Consecuencia: " << eventos[i].opciones[j].consecuencia << endl;
+        }
+    }*/
+
+    getline(archivo, *linea);
+    Mejora* mejoras = nullptr;
+    int numMejoras = 0;
+    leerMejoras(archivo, mejoras, numMejoras); //Conseguir mejoras
+    /*Probar mejoras
+    for (int i =0; i < numMejoras; i++) {   
+        cout << "Mejora: +" << mejoras[i].valor << " " << mejoras[i].tipo << endl;
+    }*/
+
+
+    //EMPIEZA EL JUEGO **********
+    Jugador jugador;
+    jugador.setVida(30);
+    jugador.setAtaque(5);
+    jugador.setPrecision(0.8);
+    jugador.setRecuperacion(2);
+
+    NodoArbol* nodoActual = raiz; // Inicio del juego en la raiz del arbol
+    bool juegoActivo = true;
+
+    while (juegoActivo && jugador.getVida() > 0) {
+
+        if (nodoActual->tipo == "INICIO") {
+            cout << nodoActual->desc << endl;
+            elegirCamino(nodoActual);
+        }
+        else if (nodoActual->tipo == "FIN") {
+            cout << nodoActual->desc << endl;
+            juegoActivo = false; // Terminar el juego
+        }
+        else if (nodoActual->tipo == "EVENTO") {
+            cout << nodoActual->desc << endl; 
+            Evento& eventoSeleccionado = elegirEvento(eventos, numEventos); // Elegir un evento aleatorio
+            cout << "¡Evento encontrado!\n" << eventoSeleccionado.nombre << endl;
+            cout << eventoSeleccionado.descripcion << endl;
+            for (int i = 0; i < 2; i++) {
+                cout << eventoSeleccionado.opciones[i].opcion << endl;
+            }
+            cout << "\nSelecciona una opcion: ";
+            int eleccion;
+            char letra;
+            cin >> letra; //Entrada del usuario
+            while (letra != 'A' && letra != 'B') { // Validar entrada
+                cout << "\nOpcion invalida. Elige A o B: ";
+                cin >> letra;
+            }
+            eleccion = letra - 'A'; // Convertir letra a indice (A=0, B=1, utiliza valores ASCII)
+            cout << eventoSeleccionado.opciones[eleccion].descripcion << "\n" << eventoSeleccionado.opciones[eleccion].consecuencia << "\n" << endl;
+            jugador.regenerarVida(); // Regenerar vida después de un evento
+            elegirCamino(nodoActual); // Elegir un camino después del evento            
+        }
+        else if (nodoActual->tipo == "COMBATE") {
+            cout << nodoActual->desc << endl;
+            jugador.regenerarVida(); // Regenerar vida después de un combate
+            elegirCamino(nodoActual); // Elegir un camino después del combate
+        }
     }
-}
-
-
-
-
-
-
-
-
-    /* SOLO PARA PROBAR COLA
-    // Probar la cola
-    Cola colaEnemigos;
-    cout << "\nEncolando enemigos..." << endl;
-    for (int i = 0; i < *numEnemigos; i++) {
-        cout << "Encolando: " << enemigos[i].nombre << endl;
-        colaEnemigos.enqueue(enemigos[i]);
-    }
-
-    cout << "\nDesencolando enemigos..." << endl;
-    while (!colaEnemigos.estaVacia()) {
-        Enemigo e = colaEnemigos.dequeue();
-        cout << "Desencolado: " << e.nombre
-             << " | Vida: " << e.vida
-             << " | Ataque: " << e.ataque
-             << " | Precision: " << e.precision
-             << " | Probabilidad: " << e.probabilidad << endl;
-    }
-*/
-
+    
+    cout << "\n\nFIN DEL JUEGO" << endl;
 
 
     archivo.close();
