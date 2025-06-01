@@ -354,6 +354,31 @@ Evento& elegirEvento(Evento* eventos, int numEventos){
 }
 
 
+Enemigo* generarEnemigos(Enemigo* enemigos, int numEnemigos) {
+    random_device rd;
+    mt19937 gen(rd()); 
+    uniform_real_distribution<float> dist(0.0, 1.0); 
+    uniform_int_distribution<int> distNum(1,3);
+
+    int numEnemigosGenerados = distNum(gen); 
+    Enemigo* enemigosGenerados = new Enemigo[numEnemigosGenerados];
+
+    for (int i = 0; i < numEnemigosGenerados; i++) {
+        float seleccionador = dist(gen);
+        float acumulado = 0.0f;
+
+        for (int j = 0; j < numEnemigos; j++) {
+            acumulado += enemigos[j].probabilidad;
+            if (seleccionador <= acumulado) {
+                enemigosGenerados[i] = enemigos[j]; 
+                break;
+            }
+        }
+    }
+    return enemigosGenerados;
+};
+
+
 int main() {
     cout << "Juego Aventura - EDD Tarea 2" << endl;
     cout << "Creado por: Jorge Gahona y Matias Ibañez\n" << endl;
