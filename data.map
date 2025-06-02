@@ -1,0 +1,90 @@
+INICIO DE ARCHIVO
+HABITACIONES
+14
+0 AA (INICIO)
+
+1 AA (EVENTO)
+
+2 AA (COMBATE)
+
+3 AA (EVENTO)
+
+4 AA (COMBATE)
+
+5 AA (EVENTO)
+
+6 AA (FIN)
+
+7 AA (FIN)
+ 
+8 AA (FIN)
+
+9 AA (FIN)
+
+10 AA (FIN)
+
+11 AA (FIN)
+
+12 AA (FIN)
+
+13 AA (FIN)
+
+ARCOS
+13
+0 -> 1
+0 -> 6
+1 -> 2
+1 -> 7
+2 -> 3
+2 -> 4
+3 -> 8
+3 -> 9
+4 -> 10
+4 -> 5
+5 -> 11
+5 -> 12
+5 -> 13
+ENEMIGOS
+4
+Pim | Vida 10 | Ataque 2 | Precision 0.8 | Probabilidad 0.2
+Pomplin | Vida 12 | Ataque 7 | Precision 0.3 | Probabilidad 0.4
+Tomp | Vida 30 | Ataque 100 | Precision 0.001 | Probabilidad 0.1
+Momplin | Vida 1 | Ataque 5 | Precision 1 | Probabilidad 0.3
+EVENTOS
+3
+&
+Tesoro
+Probabilidad 0.3
+Encuentras un tesoro!...
+A: Abrirlo
+Era una mímica! El terror afecta tu psique.
+-0.2 PRECISION
+B: Dejarlo
+Se ve sus, lo dejas pasar.
+Ninguna consecuencia.
+&
+Sentimiento
+Probabilidad 0.3
+Te empiezas a sentir extraño...
+A: Te acuestas en el suelo
+Te despiertas muy relajado y feliz!
++10 Vida
+B: Tratas de continuar
+Te mareas, te tropiezas, y te esguinzas la articulación metacarpofalángica!
+-5 Vida
+&
+Silueta
+Probabilidad 0.4
+Ves una silueta misteriosa a lo lejos.
+A: La tratas de dibujar.
+Logras un dibujo excelente, impresionando a todos tus amigos!
++7 Vida
+B: Lo tratas de identificar.
+Tras horas de forzar la vista logras entender que era una mancha en el cielo simplemente. Tu vista se agotó.
+-0.3 Precision
+MEJORAS DE COMBATE
++4 Vida
++0.1 Precision
++1 Ataque
++1 Recuperacion
+FIN DE ARCHIVO
