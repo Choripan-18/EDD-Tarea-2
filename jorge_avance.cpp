@@ -3,10 +3,11 @@
 #include <string>
 #include <sstream>
 #include <random>
+#include <limits>
 using namespace std;
 
 
-
+//Clases y Structs
 struct Habitacion {
     // Estructura de habitacion
     unsigned int id;
@@ -99,6 +100,34 @@ class Cola {
         delete temp;
         return e;
     }
+};
+
+class Jugador{
+    private:
+        int vida;
+        int ataque;
+        float precision;
+        int recuperacion;
+    public:
+        // Getters
+        int getVida() const { return vida; }
+        int getAtaque() const { return ataque; }
+        float getPrecision() const { return precision; }
+        int getRecuperacion() const { return recuperacion; }
+
+        // Setters
+        void setVida(int v) { vida = v; }
+        void setAtaque(int a) { ataque = a; }
+        void setPrecision(float p) { precision = p; }
+        void setRecuperacion(int r) { recuperacion = r; }
+
+        bool estaVivo() const;
+
+        void regenerarVida() {
+            vida += recuperacion;
+            cout << "\nHas recuperado vida. Vida actual: " << vida << endl;
+        }
+
 };
 
 
@@ -290,11 +319,190 @@ void leerMejoras(ifstream& archivo, Mejora*& mejoras, int& numMejoras) {
     }
     delete[] temp;
 }
+
+void seleccionarMejora(Mejora* mejoras, int numMejoras, Jugador& jugador){
+
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<int> dist(0, numMejoras - 1);
+
+    int mejora1 = dist(gen);
+    int mejora2;
+    do {
+        mejora2 = dist(gen);
+    } while (mejora2 == mejora1); // Asegurarse de que las mejoras sean diferentes
+
+    cout << "\nFelicidades, puedes elegir una mejora!\n";
+    cout << "A: +" << mejoras[mejora1].valor << " " << mejoras[mejora1].tipo << endl;
+    cout << "B: +" << mejoras[mejora2].valor << " " << mejoras[mejora2].tipo << endl;
+    cout << "Selecciona una mejora (A o B): ";
+    char eleccion;
+    cin >> eleccion;
+    while (eleccion != 'A' && eleccion != 'B') { // Validar entrada
+        cout << "Opcion invalida. Elige A o B: ";
+        cin >> eleccion;
+    }
+
+    Mejora seleccionada = (eleccion == 'A') ? mejoras[mejora1] : mejoras[mejora2];  //condicion? si : no
+    // Aplicar la mejora al jugador
+    if (seleccionada.tipo == "Vida") {
+        jugador.setVida(jugador.getVida() + seleccionada.valor);
+        cout << "¡Tu vida ha aumentado a " << jugador.getVida() << "!\n";
+    }
+    else if (seleccionada.tipo == "Ataque") {
+        jugador.setAtaque(jugador.getAtaque() + seleccionada.valor);
+        cout << "¡Tu ataque ha aumentado a " << jugador.getAtaque() << "!\n";
+    } 
+    else if (seleccionada.tipo == "Precision") {
+        jugador.setPrecision(jugador.getPrecision() + seleccionada.valor);
+        cout << "¡Tu precision ha aumentado a " << jugador.getPrecision() << "!\n";
+    } 
+    else if (seleccionada.tipo == "Recuperacion") {
+        jugador.setRecuperacion(jugador.getRecuperacion() + seleccionada.valor);
+        cout << "¡Tu recuperacion ha aumentado a " << jugador.getRecuperacion() << "!\n";
+    }
+    else {
+        cout << "Mejora desconocida: " << seleccionada.tipo << endl;
+    }
+    cout << "\n";
+};
+
+void elegirCamino(NodoArbol*& nodoActual) {
+    cout << "Caminos disponibles:\n";
+    int opcionMenu = 1;
+
+
+    if (nodoActual->hijo1) {
+        cout << opcionMenu << ". " << nodoActual->hijo1->name << endl;
+        opcionMenu++;
+    }
+
+    if (nodoActual->hijo2) {
+        cout << opcionMenu << ". " << nodoActual->hijo2->name << endl;
+        opcionMenu++;
+
+    }
+    if (nodoActual->hijo3) {
+        cout << opcionMenu << ". " << nodoActual->hijo3->name << endl;
+
+    }
+    int opcion;
+    cout << "\nTu eleccion: ";
+    cin >> opcion;     //ingresar eleccion
+
+    //validar camino y mover al jugador a la habitacion elegida
+    while (cin.fail() || opcion < 1 || opcion > opcionMenu) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Opcion invalida. Elige entre 1 y " << opcionMenu << ": ";
+        cin >> opcion;
+    }
+    
+    if (opcion == 1) {
+        nodoActual = nodoActual->hijo1;
+    }
+    else if (opcion == 2) {
+        nodoActual = nodoActual->hijo2;
+    }
+    else if (opcion == 3) {
+        nodoActual = nodoActual->hijo3;
+    }
+    else {
+        cout << "Opcion invalida. Intenta de nuevo." << endl;
+        elegirCamino(nodoActual);
+    }
+}
+
+/*
+* void generarEnemigos
+* Genera los enemigos de manera aleatoria para luego colocarlos en Cola
+* input: Arreglo de Enemigo, cantidad de enemigos, y la cola vacia para el combate
+* return: Void pero modifica la cola con los enemigos para el combate
+*/
+
+void generarEnemigos(Enemigo* enemigos, int numEnemigos, Cola& combate){
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<> dis(0,1);
+    int numEnemigosCombate = 1 + (dis(gen) < 0.5 ? 1 : 0) + (dis(gen) < 0.3 ? 1 : 0);
+    for (int i = 0; i < numEnemigosCombate; i++){
+        float sumaProb = 0;
+        float r = dis(gen);
+        for (int j = 0; j < numEnemigos; j++) {
+            sumaProb += enemigos[j].probabilidad;
+            if (r < sumaProb) {
+                combate.enqueue(enemigos[j]);
+                break;
+            }
+        }
+    }
+
+}
+// verificar si esta vivo
+bool Jugador :: estaVivo() const {
+    return vida > 0;
+}
+/*
+* bool combatir
+* toda la logica del combate;
+* input: arreglo de tipo Jugador, Cola con los enemigos
+* return: retorn True si sigue vive o False si se muere
+*/
+bool combatir (Jugador& jugador, Cola& combate){
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<> dis(0,1);
+    while (!combate.estaVacia() && jugador.estaVivo()){
+        Enemigo enemigo = combate.dequeue();
+
+        //ataque jugador
+        if (dis(gen) <= jugador.getPrecision()){
+        cout << "Golpeas a " << enemigo.nombre << " y le inflinges " << jugador.getAtaque() << " de daño!!" << endl;
+        enemigo.vida -= jugador.getAtaque();
+        }
+        else {
+            cout << "Fallaste el ataque!" << endl;
+        }
+        
+        if (enemigo.vida > 0) {
+            if (dis(gen) <= enemigo.precision) {
+                cout << enemigo.nombre << " te golpea por " << enemigo.ataque << " de daño!" << endl;
+                jugador.setVida(jugador.getVida() - enemigo.ataque);
+            }
+            else {
+                cout << enemigo.nombre << " falla el ataque! " << endl;
+            }
+            combate.enqueue(enemigo); // reenfila si sobrevive
+
+        }
+        else {
+            cout << " has derrotado a " << enemigo.nombre << "!!" << endl;
+        }
+        cout << "Tu vida: " << jugador.getVida() << "\n" << endl;
+    }
+    return jugador.estaVivo();
+}
+
+
+
+
+Evento& elegirEvento(Evento* eventos, int numEventos){
+
+    random_device rd; 
+    mt19937 gen(rd()); // Generador de numeros aleatorios
+    uniform_real_distribution<float> dist(0.0, 1.0); // Distribucion uniforme entre 0 y 1
+    float prob = dist(gen); // Generar un flotante aleatorio entre 0 y 1
+    float acumulado = 0.0f;
+    for (int i = 0; i < numEventos; i++) {
+        acumulado += eventos[i].probabilidad;
+        if (prob <= acumulado) {
+            return eventos[i]; // Retorna el evento seleccionado
+        }
+    }
+    return eventos[0]; //Si ningun evento es seleccionado retorna por defecto el primero
+
+}
  
-
-
-
-
 int main() {
     cout << "Juego Aventura - EDD Tarea 2" << endl;
     cout << "Creado por: Jorge Gahona y Matias Ibañez" << endl;
@@ -319,18 +527,17 @@ int main() {
     Habitacion* habitaciones = nullptr;
     int* numHabitaciones = new int;
     ; // Inicializar para guardar cantidad de habitaciones
-
     getline(archivo, *linea);
     *numHabitaciones = stoi(*linea);
     leerHabitaciones(archivo, habitaciones, *numHabitaciones);
 
-    // Imprimir habitaciones
+    /* Imprimir habitaciones
     for (int i = 0; i < *numHabitaciones; i++) {
         cout << "Habitacion " << habitaciones[i].id << ": " << habitaciones[i].name
              << " (" << habitaciones[i].tipo << ")" << endl
              << "Descripcion: " << habitaciones[i].desc << endl;
     }
-    // Aca termina justo antes de linea ARCOS
+    Aca termina justo antes de linea ARCOS  */
 
     getline(archivo, *linea);
     if (*linea != "ARCOS"){
@@ -343,10 +550,11 @@ int main() {
 
     *numArcos = stoi(*linea);
     leerArcos(archivo, arcos, *numArcos);
-
+    /*
     for (int i= 0; i < *numArcos; i++){
         cout << arcos[i].origen << "->" << arcos[i].destino<<endl;
     }
+    */
 
     NodoArbol* raiz = nullptr;
     crearArbol(habitaciones, arcos, raiz, *numHabitaciones, *numArcos);
@@ -366,7 +574,7 @@ int main() {
     Enemigo* enemigos = nullptr;
 
     leerEnemigos(archivo, enemigos, *numEnemigos);
-
+    /*
        // Imprimir enemigos
     for (int i = 0; i < *numEnemigos; i++) {
         cout << "Enemigo " << i + 1 << ": " << enemigos[i].nombre
@@ -375,6 +583,8 @@ int main() {
              << " | Precision: " << enemigos[i].precision
              << " | Probabilidad: " << enemigos[i].probabilidad << endl;
     }
+    */
+
     //Aqui nos quedamos justo en linea EVENTOS
     getline(archivo, *linea); // Leer "EVENTOS"
     if(*linea != "EVENTOS"){
@@ -391,13 +601,16 @@ int main() {
     numEventos = stoi(*linea);
     Evento* eventos = nullptr;
     leerEventos(archivo, eventos, numEventos);
+
+    /*
     for (int i = 0; i < numEventos; i++) {
     cout << "Evento " << eventos[i].nombre << ": Probabilidad " << eventos[i].probabilidad << endl;
     for (int j = 0; j < 2; j++) {
         cout << "  " << eventos[i].opciones[j].accion << " - " << eventos[i].opciones[j].desc
              << " (" << eventos[i].opciones[j].consecuencia << ")" << endl;
     }
-}
+    */
+
     getline(archivo, *linea);
     if (*linea != "MEJORAS DE COMBATE") {
         cerr << "Error al leer mejoras de combate" << endl;
@@ -411,9 +624,71 @@ int main() {
     Mejora* mejoras = nullptr;
     int numMejoras = 0;
     leerMejoras(archivo, mejoras, numMejoras);
+
+    /*
     for (int i =0; i < numMejoras; i++) {
         cout << "Mejora: +" << mejoras[i].valor << " " << mejoras[i].tipo << endl;
     }
+    */
+
+//EMPIEZA EL JUEGO **********
+    Jugador jugador;
+    jugador.setVida(30);
+    jugador.setAtaque(5);
+    jugador.setPrecision(0.8);
+    jugador.setRecuperacion(2);
+
+    NodoArbol* nodoActual = raiz; // Inicio del juego en la raiz del arbol
+    bool juegoActivo = true;
+
+    while (juegoActivo && jugador.getVida() > 0) {
+
+        if (nodoActual->tipo == "INICIO") {
+            cout << nodoActual->desc << endl;
+            elegirCamino(nodoActual);
+        }
+        else if (nodoActual->tipo == "FIN") {
+            cout << "\n--- Fin del juego ---\n" <<nodoActual->desc << endl;
+            juegoActivo = false; // Terminar el juego
+        }
+        else if (nodoActual->tipo == "EVENTO") {
+            cout << nodoActual->desc << endl; 
+            Evento& eventoSeleccionado = elegirEvento(eventos, numEventos); // Elegir un evento aleatorio
+            cout << "¡Evento encontrado!\n" << eventoSeleccionado.nombre << endl;
+            cout << eventoSeleccionado.desc << endl;
+            for (int i = 0; i < 2; i++) {
+                cout << eventoSeleccionado.opciones[i].accion << endl;
+            }
+            cout << "\nSelecciona una opcion: ";
+            int eleccion;
+            char letra;
+            cin >> letra; //Entrada del usuario
+            while (letra != 'A' && letra != 'B') { // Validar entrada
+                cout << "\nOpcion invalida. Elige A o B: ";
+                cin >> letra;
+            }
+            eleccion = letra - 'A'; // Convertir letra a indice (A=0, B=1, utiliza valores ASCII)
+            cout << eventoSeleccionado.opciones[eleccion].desc << "\n" << eventoSeleccionado.opciones[eleccion].consecuencia << "\n" << endl;
+            jugador.regenerarVida(); // Regenerar vida después de un evento
+            elegirCamino(nodoActual); // Elegir un camino después del evento            
+        }
+        else if (nodoActual->tipo == "COMBATE") {
+            cout << nodoActual->desc << endl;
+            Cola combate;
+
+            generarEnemigos(enemigos, *numEnemigos, combate);
+            if (!combatir(jugador, combate)) {
+                cout << "Te han matado..." << endl;
+                juegoActivo = false;
+                break;
+            }
+            jugador.regenerarVida();
+            seleccionarMejora(mejoras, numMejoras,jugador);
+            elegirCamino(nodoActual);
+        }
+    }
+    
+    cout << "\n\nFIN DEL JUEGO" << endl;
     
 
     archivo.close();
@@ -426,5 +701,6 @@ int main() {
     delete[] arcos;
     delete numArcos;
     delete raiz;
+    delete[] enemigos;
     return 0;
 }
