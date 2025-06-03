@@ -2,45 +2,45 @@ INICIO DE ARCHIVO
 HABITACIONES
 14
 0 Santiago (INICIO)
-Te encuentras en la Plaza de Armas de Santiago, rodeado de palomas y vendedores ambulantes. El bullicio de la ciudad te envuelve mientras decides tu próximo destino: la bohemia Providencia o la elegante Las Condes.
+Te encuentras en la Plaza de Armas de Santiago, rodeado de palomas y vendedores ambulantes gritando "¡Cables pa’l celular, a luca nomás!". El olor a sopaipillas te tienta mientras decides si ir pa’ la bohemia o pa’ los cuicos.
 1 Providencia (EVENTO)
-En Providencia, caminas por la Avenida Providencia cuando un flaite con gorra y cadenas se acerca y te dice: 'Oye, compadre, tengo un negocio pa' ti. Te interesa?' ¿Aceptas su propuesta o sigues tu camino?
+Providencia tiene calles llenas de cafés, tiendas boutique y un aire vibrante entre edificios modernos.
 2 Las Condes (COMBATE)
-Llegas a Las Condes, donde los edificios altos y los autos de lujo son la norma. De repente, Papi Micky aparece frente a ti, con su estilo único, desafiándote a un combate de rimas. ¿Estás listo para enfrentarlo?
+Las Condes está llena de edificios altos, autos de lujo y avenidas amplias con un ambiente imponente.
 3 Vitacura (EVENTO)
-En Vitacura, paseas por calles tranquilas cuando un cuico te pide ayuda con su auto de lujo averiado. ¿Lo ayudas o sigues tu camino?
+Vitacura ofrece calles tranquilas, mansiones elegantes y jardines bien cuidados en un entorno sofisticado.
 4 Ñuñoa (COMBATE)
-En Ñuñoa, El Loco René te espera en una plaza, listo para un duelo de palabras. Su reputación lo precede; ¿podrás superarlo?
+Ñuñoa combina plazas animadas, casas antiguas y un ambiente donde se cruzan estilos de vida distintos.
 5 Macul (EVENTO)
-En Macul, encuentras un meme viral en un poste. ¿Lo compartes en tus redes o lo ignoras?
+Macul es un barrio residencial con calles calmadas, postes llenos de grafitis y un toque de cotidianidad.
 6 La Florida (FIN)
-Te adentras en La Florida y te encuentras en medio de una batalla de freestyle. Intentas rapear, pero tus rimas son tan malas que la multitud te abuchea y decides retirarte avergonzado.
+Te adentras en La Florida y te encuentras en medio de una batalla de freestyle. Tus rimas son tan malas que la multitud te abuchea y decides retirarte avergonzado.
 7 Maipú (FIN)
-En Maipú, participas en una manifestación por los derechos de los memes. La policía llega y dispersa a la multitud con gases lacrimógenos. Terminas arrestado por posesión de memes ilegales.
+En Maipú, te unes a una marcha por los derechos de los memes. Terminas con gas lacrimógeno en la cara y detenido por "memes subversivos".
 8 Puente Alto (FIN)
-En Puente Alto, te involucras en una pelea callejera entre flaites y cuicos. Recibes un golpe y caes al suelo, incapaz de continuar.
+En Puente Alto, te metes en una pelea entre flaites y cuicos. Un combo perdido te deja en el suelo.
 9 San Bernardo (FIN)
-En San Bernardo, descubres un portal dimensional creado por shitposters. Al entrar, viajas en el tiempo al nodo ante-anterior, como si nada hubiera pasado.
+En San Bernardo, unos shitposters abren un portal dimensional con puro poder de memes. Cruzas y vuelves al nodo ante-anterior como si fueras el Doc de Volver al Futuro.
 10 Quilicura (FIN)
-En Quilicura, te encuentras con un grupo de shitposters que te confunden con un meme viviente. Te atrapan en un bucle de internet del que no puedes escapar.
+En Quilicura, te atrapan en un loop de videos raros de shitposters y no hay salida.
 11 Pudahuel (FIN)
-Llegas al aeropuerto de Pudahuel con la intención de huir del torneo. Sin embargo, al no tener pasaporte, no puedes abordar ningún avión y quedas varado.
+En Pudahuel, llegas al aeropuerto pa’ arrancar del torneo. Sin pasaporte, te quedas mirando aviones como el gil que se perdió el vuelo a la fama.
 12 Recoleta (FIN)
-Visitas el cementerio de Recoleta y, fascinado por su historia, decides quedarte a explorar. Te pierdes entre las tumbas y nunca encuentras la salida.
+En Recoleta, te metes al cementerio a sacar fotos pa’l Instagram. Te pierdes entre las tumbas y terminas viviendo como extra de película de terror.
 13 Independencia (FIN)
-En Independencia, te unes a una banda de rock local y te conviertes en una estrella. Decides dejar el torneo para seguir tu carrera musical.
+En Independencia, te unes a una banda de rock flaite-punk. Te haces tan famoso que dejas el torneo pa’ tocar en la Yein Fonda.
 ARCOS
 13
 0 -> 1
-0 -> 6
-1 -> 2
-1 -> 7
-2 -> 3
-2 -> 4
-3 -> 8
-3 -> 9
+0 -> 2
+1 -> 3
+1 -> 4
+2 -> 5
+2 -> 6
+3 -> 7
+7 -> 8
+4 -> 9
 4 -> 10
-4 -> 5
 5 -> 11
 5 -> 12
 5 -> 13
@@ -63,24 +63,24 @@ B: Ignorar
 Decides no arriesgarte y sigues tu camino sin problemas.
 Ninguna consecuencia.
 &
-Zorron de la Católica
+Cuico en Vitacura
 Probabilidad 0.3
-Un cuico zorron de la Cato te pide que le ayudes con el auto que acaba de chocar que es de su papa.
+Un cuico te pide ayuda con su auto de lujo averiado en Vitacura.
 A: Ayudar
-Lo ayudas y te da las gracias gritando: "1, 2, 3 CATOLICA", lo cual te da mucha motivacion.
+Lo ayudas y te da las gracias, ofreciéndote una recompensa.
 +10 Vida
 B: No ayudar
 Lo ignoras y él te mira mal, afectando tu confianza.
 -0.2 Precision
 &
-Sansano promedio
+Shitpost en Macul
 Probabilidad 0.4
-Encuentras un sansano informatico jugando LoL en la usm.
-A: Mish
-Le tiras el computador a la basura y te da las gracias por ayudarlo a dejar el lol.
+Encuentras un meme viral en un poste en Macul.
+A: Compartirlo
+Lo compartes en tus redes y ganas popularidad.
 +2 Ataque
 B: Ignorarlo
-El estudiante justo perdio su ranked, y de la frustracion se desahoga contigo. Te maldice con el poder del Mish.s
+Te sientes fuera de onda y eso afecta tu moral.
 -5 Vida
 MEJORAS DE COMBATE
 +5 Vida
