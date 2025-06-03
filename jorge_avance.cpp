@@ -237,7 +237,7 @@ int calcularAltura(NodoArbol* nodo) {
     int h3 = calcularAltura(nodo->hijo3);
     return 1 + max({h1, h2, h3});
 }
-/* USAR EN CASO DE COMPROBAR FUNCIONAMIENTO DEL ARBOL
+
 void imprimirArbol(NodoArbol* nodo, int nivel = 0) {
     if (!nodo) return;
     for (int i = 0; i < nivel; i++) cout << "  ";
@@ -247,7 +247,7 @@ void imprimirArbol(NodoArbol* nodo, int nivel = 0) {
     imprimirArbol(nodo->hijo2, nivel + 1);
     imprimirArbol(nodo->hijo3, nivel + 1);
 }
-    */
+
 
 /* void leerEnemigos
  * Lee la seccion de enemigos y los almacena en un arreglo de Enemigos
@@ -259,7 +259,6 @@ void imprimirArbol(NodoArbol* nodo, int nivel = 0) {
  * Return:
  * Es void pero modifica el arreglo de Enemigo con todos los enemigos.
 */
-
 void leerEnemigos(ifstream& archivo, Enemigo*& enemigos, int& numEnemigos) {
     string linea; 
     enemigos = new Enemigo[numEnemigos];
@@ -355,6 +354,7 @@ void seleccionarMejora(Mejora* mejoras, int numMejoras, Jugador& jugador){
     char eleccion;
     cin >> eleccion;
     eleccion = toupper(eleccion);
+
     while (eleccion != 'A' && eleccion != 'B') { // Validar entrada
         cout << "Opcion invalida. Elige A o B: ";
         cin >> eleccion;
@@ -565,8 +565,9 @@ void iniciarJuego(Jugador& jugador, NodoArbol* raiz, Evento* eventos, int numEve
                 cout << "\nSelecciona una opcion: ";
                 char letra;
                 cin >> letra;
+                letra = toupper(letra);
                 while (letra != 'A' && letra != 'B') {
-                    cout << "\nOpcion invalida. Elige A o B";
+                    cout << "\nOpcion invalida. Elige A o B: ";
                     cin >> letra;
                     letra = toupper(letra);
                 }
@@ -588,7 +589,6 @@ void iniciarJuego(Jugador& jugador, NodoArbol* raiz, Evento* eventos, int numEve
             elegirCamino(nodoActual);
 
         }else if (nodoActual -> tipo == "FIN") {
-            cout << "\n--- Fin del juego ---\n" << nodoActual -> desc << endl;
             juegoActivo = false;
         }
 
@@ -615,7 +615,7 @@ int main() {
     cout << "Juego Aventura - EDD Tarea 2" << endl;
     cout << "Creado por: Jorge Gahona y Matias Ibañez" << endl;
 
-    ifstream archivo("ejemplo.map");
+    ifstream archivo("data.map");
     if (!archivo.is_open()) {
         cerr << "Error al abrir el Archivo" << endl;
         return 1;
@@ -688,7 +688,7 @@ int main() {
     numEventos = stoi(*linea);
     leerEventos(archivo, eventos, numEventos);
 
-    //Lectura de eventos
+    //Lectura de mejoras
     getline(archivo, *linea);
     if (*linea != "MEJORAS DE COMBATE") {
         cerr << "Error al leer mejoras de combate" << endl;

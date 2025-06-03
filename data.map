@@ -1,0 +1,90 @@
+INICIO DE ARCHIVO
+HABITACIONES
+14
+0 Santiago (INICIO)
+Te encuentras en la Plaza de Armas de Santiago, rodeado de palomas y vendedores ambulantes. El bullicio de la ciudad te envuelve mientras decides tu próximo destino: la bohemia Providencia o la elegante Las Condes.
+1 Providencia (EVENTO)
+En Providencia, caminas por la Avenida Providencia cuando un flaite con gorra y cadenas se acerca y te dice: 'Oye, compadre, tengo un negocio pa' ti. Te interesa?' ¿Aceptas su propuesta o sigues tu camino?
+2 Las Condes (COMBATE)
+Llegas a Las Condes, donde los edificios altos y los autos de lujo son la norma. De repente, Papi Micky aparece frente a ti, con su estilo único, desafiándote a un combate de rimas. ¿Estás listo para enfrentarlo?
+3 Vitacura (EVENTO)
+En Vitacura, paseas por calles tranquilas cuando un cuico te pide ayuda con su auto de lujo averiado. ¿Lo ayudas o sigues tu camino?
+4 Ñuñoa (COMBATE)
+En Ñuñoa, El Loco René te espera en una plaza, listo para un duelo de palabras. Su reputación lo precede; ¿podrás superarlo?
+5 Macul (EVENTO)
+En Macul, encuentras un meme viral en un poste. ¿Lo compartes en tus redes o lo ignoras?
+6 La Florida (FIN)
+Te adentras en La Florida y te encuentras en medio de una batalla de freestyle. Intentas rapear, pero tus rimas son tan malas que la multitud te abuchea y decides retirarte avergonzado.
+7 Maipú (FIN)
+En Maipú, participas en una manifestación por los derechos de los memes. La policía llega y dispersa a la multitud con gases lacrimógenos. Terminas arrestado por posesión de memes ilegales.
+8 Puente Alto (FIN)
+En Puente Alto, te involucras en una pelea callejera entre flaites y cuicos. Recibes un golpe y caes al suelo, incapaz de continuar.
+9 San Bernardo (FIN)
+En San Bernardo, descubres un portal dimensional creado por shitposters. Al entrar, viajas en el tiempo al nodo ante-anterior, como si nada hubiera pasado.
+10 Quilicura (FIN)
+En Quilicura, te encuentras con un grupo de shitposters que te confunden con un meme viviente. Te atrapan en un bucle de internet del que no puedes escapar.
+11 Pudahuel (FIN)
+Llegas al aeropuerto de Pudahuel con la intención de huir del torneo. Sin embargo, al no tener pasaporte, no puedes abordar ningún avión y quedas varado.
+12 Recoleta (FIN)
+Visitas el cementerio de Recoleta y, fascinado por su historia, decides quedarte a explorar. Te pierdes entre las tumbas y nunca encuentras la salida.
+13 Independencia (FIN)
+En Independencia, te unes a una banda de rock local y te conviertes en una estrella. Decides dejar el torneo para seguir tu carrera musical.
+ARCOS
+13
+0 -> 1
+0 -> 6
+1 -> 2
+1 -> 7
+2 -> 3
+2 -> 4
+3 -> 8
+3 -> 9
+4 -> 10
+4 -> 5
+5 -> 11
+5 -> 12
+5 -> 13
+ENEMIGOS
+4
+El Loco René | Vida 15 | Ataque 5 | Precision 0.7 | Probabilidad 0.3
+Papi Micky | Vida 20 | Ataque 8 | Precision 0.6 | Probabilidad 0.25
+Flaitiano | Vida 25 | Ataque 10 | Precision 0.5 | Probabilidad 0.2
+Vendedor de Leña | Vida 10 | Ataque 3 | Precision 0.9 | Probabilidad 0.25
+EVENTOS
+3
+&
+Negocio Sospechoso
+Probabilidad 0.3
+Un flaite te ofrece un 'negocio' en Providencia: 'Mira, tengo unas entradas para el concierto de Bad Bunny a mitad de precio. ¿Las quieres?' Pero algo huele mal...
+A: Aceptar
+Resulta que las entradas son falsas. Te das cuenta demasiado tarde y pierdes tiempo y dinero.
+-10 Vida +5 Ataque
+B: Ignorar
+Decides no arriesgarte y sigues tu camino sin problemas.
+Ninguna consecuencia.
+&
+Zorron de la Católica
+Probabilidad 0.3
+Un cuico zorron de la Cato te pide que le ayudes con el auto que acaba de chocar que es de su papa.
+A: Ayudar
+Lo ayudas y te da las gracias gritando: "1, 2, 3 CATOLICA", lo cual te da mucha motivacion.
++10 Vida
+B: No ayudar
+Lo ignoras y él te mira mal, afectando tu confianza.
+-0.2 Precision
+&
+Sansano promedio
+Probabilidad 0.4
+Encuentras un sansano informatico jugando LoL en la usm.
+A: Mish
+Le tiras el computador a la basura y te da las gracias por ayudarlo a dejar el lol.
++2 Ataque
+B: Ignorarlo
+El estudiante justo perdio su ranked, y de la frustracion se desahoga contigo. Te maldice con el poder del Mish.s
+-5 Vida
+MEJORAS DE COMBATE
++5 Vida
++0.2 Precision
++2 Ataque
++1 Recuperacion
+FIN DE ARCHIVO
